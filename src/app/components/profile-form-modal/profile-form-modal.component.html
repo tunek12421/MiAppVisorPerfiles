@@ -23,7 +23,7 @@
 
   <ion-list>
     <!-- Nombre -->
-    <ion-item>
+    <ion-item [color]="formData.name && !isNameValid ? 'danger' : ''">
       <ion-label position="stacked">
         <ion-text color="primary">
           <h2>Nombre completo *</h2>
@@ -34,10 +34,26 @@
         placeholder="Ej: Juan Pérez"
         [clearInput]="true">
       </ion-input>
+      <ion-icon 
+        *ngIf="formData.name && isNameValid" 
+        name="checkmark-circle" 
+        slot="end" 
+        color="success">
+      </ion-icon>
+      <ion-icon 
+        *ngIf="formData.name && !isNameValid" 
+        name="close-circle" 
+        slot="end" 
+        color="danger">
+      </ion-icon>
     </ion-item>
+    <ion-note *ngIf="nameError" color="danger" class="error-message">
+      <ion-icon name="alert-circle" class="error-icon"></ion-icon>
+      {{ nameError }}
+    </ion-note>
 
     <!-- Email -->
-    <ion-item>
+    <ion-item [color]="formData.email && !isEmailValid ? 'danger' : ''">
       <ion-label position="stacked">
         <ion-text color="primary">
           <h2>Correo electrónico *</h2>
@@ -49,10 +65,26 @@
         placeholder="correo@empresa.com"
         [clearInput]="true">
       </ion-input>
+      <ion-icon 
+        *ngIf="formData.email && isEmailValid" 
+        name="checkmark-circle" 
+        slot="end" 
+        color="success">
+      </ion-icon>
+      <ion-icon 
+        *ngIf="formData.email && !isEmailValid" 
+        name="close-circle" 
+        slot="end" 
+        color="danger">
+      </ion-icon>
     </ion-item>
+    <ion-note *ngIf="emailError" color="danger" class="error-message">
+      <ion-icon name="alert-circle" class="error-icon"></ion-icon>
+      {{ emailError }}
+    </ion-note>
 
     <!-- Teléfono -->
-    <ion-item>
+    <ion-item [color]="formData.phone && !isPhoneValid ? 'danger' : ''">
       <ion-label position="stacked">
         <ion-text color="primary">
           <h2>Teléfono</h2>
@@ -64,10 +96,26 @@
         placeholder="+34 600 123 456"
         [clearInput]="true">
       </ion-input>
+      <ion-icon 
+        *ngIf="formData.phone && isPhoneValid" 
+        name="checkmark-circle" 
+        slot="end" 
+        color="success">
+      </ion-icon>
+      <ion-icon 
+        *ngIf="formData.phone && !isPhoneValid" 
+        name="close-circle" 
+        slot="end" 
+        color="danger">
+      </ion-icon>
     </ion-item>
+    <ion-note *ngIf="phoneError" color="danger" class="error-message">
+      <ion-icon name="alert-circle" class="error-icon"></ion-icon>
+      {{ phoneError }}
+    </ion-note>
 
     <!-- CARGO - Selector Interactivo con Búsqueda -->
-    <ion-item button (click)="openRoleSelector()">
+    <ion-item button (click)="openRoleSelector()" [color]="!formData.role ? 'light' : ''">
       <ion-label>
         <ion-text color="primary">
           <h2>Cargo *</h2>
@@ -77,6 +125,13 @@
       </ion-label>
       <ion-icon name="briefcase-outline" slot="start" color="medium"></ion-icon>
       <ion-icon name="chevron-forward" slot="end" color="medium"></ion-icon>
+      <ion-icon 
+        *ngIf="formData.role" 
+        name="checkmark-circle" 
+        slot="end" 
+        color="success" 
+        style="margin-left: 5px;">
+      </ion-icon>
     </ion-item>
 
     <!-- DEPARTAMENTO - Selector Visual con Chips -->

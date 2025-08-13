@@ -45,3 +45,17 @@
 ion-item {
   margin-bottom: 10px;
 }
+
+.error-message {
+  display: flex;
+  align-items: center;
+  padding: 8px 16px;
+  margin-top: -5px;
+  margin-bottom: 10px;
+  font-size: 0.9em;
+}
+
+.error-icon {
+  margin-right: 5px;
+  font-size: 1.1em;
+}

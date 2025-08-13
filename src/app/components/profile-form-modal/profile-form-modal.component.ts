@@ -94,13 +94,62 @@ export class ProfileFormModalComponent implements OnInit {
       this.formData.email && 
       this.formData.role && 
       this.formData.department &&
-      this.validateEmail(this.formData.email)
+      this.validateEmail(this.formData.email) &&
+      this.validateName(this.formData.name) &&
+      (!this.formData.phone || this.validatePhone(this.formData.phone))
     );
   }
 
   validateEmail(email: string): boolean {
+    if (!email) return false;
     const re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     return re.test(email);
+  }
+
+  validatePhone(phone: string): boolean {
+    if (!phone) return true; // Phone is optional
+    // Spanish phone patterns: +34 XXX XXX XXX, 6XX XXX XXX, 9XX XXX XXX
+    const re = /^(\+34\s?)?[6-9]\d{2}\s?\d{3}\s?\d{3}$/;
+    return re.test(phone.replace(/\s/g, ''));
+  }
+
+  validateName(name: string): boolean {
+    if (!name) return false;
+    // Only letters, spaces, accents, and hyphens
+    const re = /^[a-zA-ZáéíóúÁÉÍÓÚñÑüÜ\s\-']+$/;
+    return re.test(name) && name.trim().length >= 2;
+  }
+
+  // Validation status getters for UI feedback
+  get isNameValid(): boolean {
+    return !this.formData.name || this.validateName(this.formData.name);
+  }
+
+  get isEmailValid(): boolean {
+    return !this.formData.email || this.validateEmail(this.formData.email);
+  }
+
+  get isPhoneValid(): boolean {
+    return !this.formData.phone || this.validatePhone(this.formData.phone);
+  }
+
+  get nameError(): string {
+    if (!this.formData.name) return '';
+    if (this.formData.name.trim().length < 2) return 'Mínimo 2 caracteres';
+    if (!this.validateName(this.formData.name)) return 'Solo letras y espacios';
+    return '';
+  }
+
+  get emailError(): string {
+    if (!this.formData.email) return '';
+    if (!this.validateEmail(this.formData.email)) return 'Email no válido';
+    return '';
+  }
+
+  get phoneError(): string {
+    if (!this.formData.phone) return '';
+    if (!this.validatePhone(this.formData.phone)) return 'Formato: +34 600 123 456';
+    return '';
   }
 
   dismiss() {
