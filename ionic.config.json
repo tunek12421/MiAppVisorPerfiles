@@ -1,0 +1,7 @@
+{
+  "name": "MiAppVisorPerfiles",
+  "integrations": {
+    "capacitor": {}
+  },
+  "type": "angular"
+}
