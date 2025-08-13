@@ -126,15 +126,19 @@ export class ProfileService {
   }
 
   addProfile(profile: UserProfile) {
+    console.log('Adding profile:', profile); // Debug
     const profiles = this.getProfiles();
     profiles.push(profile);
     this.profilesSubject.next(profiles);
+    
+    console.log('All profiles after add:', profiles); // Debug
+    console.log('Statistics after add:', this.getStatistics()); // Debug
     
     this.addActivity({
       icon: 'person-add',
       color: 'success',
       title: 'Nuevo perfil agregado',
-      description: `${profile.name} se unió al equipo`,
+      description: `${profile.name} se unió al equipo (${profile.department})`,
       time: 'Hace unos segundos'
     });
   }

@@ -94,18 +94,32 @@ export class Tab1Page implements OnInit {
         {
           text: 'Guardar',
           handler: async (data) => {
-            if (data.name && data.email && data.role) {
+            if (data.name && data.email && data.role && data.department) {
+              // Normalize department name to match existing ones
+              let normalizedDepartment = data.department.trim();
+              const departments = this.profileService.getAvailableDepartments();
+              
+              // Try to match with existing departments (case insensitive, accent insensitive)
+              const foundDept = departments.find(dept => 
+                dept.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "") === 
+                normalizedDepartment.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "")
+              );
+              
+              normalizedDepartment = foundDept || normalizedDepartment;
+              
               const newProfile: UserProfile = {
                 id: Date.now(),
                 name: data.name,
                 email: data.email,
                 role: data.role,
-                department: data.department || 'Tecnología',
+                department: normalizedDepartment,
                 status: 'active',
                 avatar: 'https://ionicframework.com/docs/img/demos/avatar.svg'
               };
               this.profileService.addProfile(newProfile);
               await this.showToast('Perfil agregado correctamente');
+            } else {
+              await this.showToast('Por favor completa todos los campos');
             }
           }
         }
