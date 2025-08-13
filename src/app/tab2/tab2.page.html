@@ -1,17 +1,85 @@
 <ion-header [translucent]="true">
-  <ion-toolbar>
+  <ion-toolbar color="primary">
     <ion-title>
-      Tab 2
+      <ion-icon name="stats-chart-outline"></ion-icon>
+      Estadísticas
     </ion-title>
   </ion-toolbar>
 </ion-header>
 
 <ion-content [fullscreen]="true">
-  <ion-header collapse="condense">
-    <ion-toolbar>
-      <ion-title size="large">Tab 2</ion-title>
-    </ion-toolbar>
-  </ion-header>
+  <ion-card>
+    <ion-card-header>
+      <ion-card-title>Resumen de Perfiles</ion-card-title>
+      <ion-card-subtitle>Vista general del sistema</ion-card-subtitle>
+    </ion-card-header>
+    <ion-card-content>
+      <ion-grid>
+        <ion-row>
+          <ion-col size="6">
+            <div class="stat-box">
+              <ion-icon name="people" color="primary" size="large"></ion-icon>
+              <h2>{{ totalProfiles }}</h2>
+              <p>Total Perfiles</p>
+            </div>
+          </ion-col>
+          <ion-col size="6">
+            <div class="stat-box">
+              <ion-icon name="checkmark-circle" color="success" size="large"></ion-icon>
+              <h2>{{ activeProfiles }}</h2>
+              <p>Activos</p>
+            </div>
+          </ion-col>
+        </ion-row>
+        <ion-row>
+          <ion-col size="6">
+            <div class="stat-box">
+              <ion-icon name="pause-circle" color="medium" size="large"></ion-icon>
+              <h2>{{ inactiveProfiles }}</h2>
+              <p>Inactivos</p>
+            </div>
+          </ion-col>
+          <ion-col size="6">
+            <div class="stat-box">
+              <ion-icon name="briefcase" color="tertiary" size="large"></ion-icon>
+              <h2>{{ departments }}</h2>
+              <p>Departamentos</p>
+            </div>
+          </ion-col>
+        </ion-row>
+      </ion-grid>
+    </ion-card-content>
+  </ion-card>
 
-  <app-explore-container name="Tab 2 page"></app-explore-container>
+  <ion-card>
+    <ion-card-header>
+      <ion-card-title>Perfiles por Departamento</ion-card-title>
+    </ion-card-header>
+    <ion-card-content>
+      <ion-list>
+        <ion-item *ngFor="let dept of departmentStats">
+          <ion-label>{{ dept.name }}</ion-label>
+          <ion-badge slot="end">{{ dept.count }}</ion-badge>
+        </ion-item>
+      </ion-list>
+    </ion-card-content>
+  </ion-card>
+
+  <ion-card>
+    <ion-card-header>
+      <ion-card-title>Actividad Reciente</ion-card-title>
+    </ion-card-header>
+    <ion-card-content>
+      <ion-list>
+        <ion-item *ngFor="let activity of recentActivities">
+          <ion-icon [name]="activity.icon" slot="start" [color]="activity.color"></ion-icon>
+          <ion-label>
+            <h3>{{ activity.title }}</h3>
+            <p>{{ activity.description }}</p>
+            <p><small>{{ activity.time }}</small></p>
+          </ion-label>
+        </ion-item>
+      </ion-list>
+    </ion-card-content>
+  </ion-card>
 </ion-content>

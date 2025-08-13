@@ -1,17 +1,56 @@
 <ion-header [translucent]="true">
-  <ion-toolbar>
+  <ion-toolbar color="primary">
     <ion-title>
-      Tab 1
+      <ion-icon name="people-outline"></ion-icon>
+      Lista de Perfiles
     </ion-title>
   </ion-toolbar>
 </ion-header>
 
 <ion-content [fullscreen]="true">
-  <ion-header collapse="condense">
-    <ion-toolbar>
-      <ion-title size="large">Tab 1</ion-title>
-    </ion-toolbar>
-  </ion-header>
+  <ion-refresher slot="fixed" (ionRefresh)="handleRefresh($event)">
+    <ion-refresher-content></ion-refresher-content>
+  </ion-refresher>
+  
+  <ion-searchbar 
+    placeholder="Buscar perfil..." 
+    [(ngModel)]="searchTerm"
+    (ionInput)="filterProfiles()"
+    animated="true">
+  </ion-searchbar>
 
-  <app-explore-container name="Tab 1 page"></app-explore-container>
+  <ion-list>
+    <ion-item-sliding *ngFor="let profile of filteredProfiles">
+      <ion-item button (click)="viewProfile(profile)">
+        <ion-avatar slot="start">
+          <img [src]="profile.avatar" [alt]="profile.name">
+        </ion-avatar>
+        <ion-label>
+          <h2>{{ profile.name }}</h2>
+          <p>{{ profile.role }}</p>
+          <p class="ion-text-wrap">
+            <ion-icon name="mail-outline"></ion-icon> {{ profile.email }}
+          </p>
+        </ion-label>
+        <ion-badge slot="end" [color]="profile.status === 'active' ? 'success' : 'medium'">
+          {{ profile.status }}
+        </ion-badge>
+      </ion-item>
+      
+      <ion-item-options side="end">
+        <ion-item-option color="primary" (click)="editProfile(profile)">
+          <ion-icon slot="icon-only" name="create"></ion-icon>
+        </ion-item-option>
+        <ion-item-option color="danger" (click)="deleteProfile(profile)">
+          <ion-icon slot="icon-only" name="trash"></ion-icon>
+        </ion-item-option>
+      </ion-item-options>
+    </ion-item-sliding>
+  </ion-list>
+
+  <ion-fab vertical="bottom" horizontal="end" slot="fixed">
+    <ion-fab-button color="primary" (click)="addProfile()">
+      <ion-icon name="add"></ion-icon>
+    </ion-fab-button>
+  </ion-fab>
 </ion-content>

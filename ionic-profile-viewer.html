@@ -1,0 +1,702 @@
+<!-- ARCHIVO 1: src/app/tab1/tab1.page.html -->
+<!-- Reemplaza el contenido de tab1.page.html con esto: -->
+
+<ion-header [translucent]="true">
+  <ion-toolbar color="primary">
+    <ion-title>
+      <ion-icon name="people-outline"></ion-icon>
+      Lista de Perfiles
+    </ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content [fullscreen]="true">
+  <ion-refresher slot="fixed" (ionRefresh)="handleRefresh($event)">
+    <ion-refresher-content></ion-refresher-content>
+  </ion-refresher>
+  
+  <ion-searchbar 
+    placeholder="Buscar perfil..." 
+    [(ngModel)]="searchTerm"
+    (ionInput)="filterProfiles()"
+    animated="true">
+  </ion-searchbar>
+
+  <ion-list>
+    <ion-item-sliding *ngFor="let profile of filteredProfiles">
+      <ion-item button (click)="viewProfile(profile)">
+        <ion-avatar slot="start">
+          <img [src]="profile.avatar" [alt]="profile.name">
+        </ion-avatar>
+        <ion-label>
+          <h2>{{ profile.name }}</h2>
+          <p>{{ profile.role }}</p>
+          <p class="ion-text-wrap">
+            <ion-icon name="mail-outline"></ion-icon> {{ profile.email }}
+          </p>
+        </ion-label>
+        <ion-badge slot="end" [color]="profile.status === 'active' ? 'success' : 'medium'">
+          {{ profile.status }}
+        </ion-badge>
+      </ion-item>
+      
+      <ion-item-options side="end">
+        <ion-item-option color="primary" (click)="editProfile(profile)">
+          <ion-icon slot="icon-only" name="create"></ion-icon>
+        </ion-item-option>
+        <ion-item-option color="danger" (click)="deleteProfile(profile)">
+          <ion-icon slot="icon-only" name="trash"></ion-icon>
+        </ion-item-option>
+      </ion-item-options>
+    </ion-item-sliding>
+  </ion-list>
+
+  <ion-fab vertical="bottom" horizontal="end" slot="fixed">
+    <ion-fab-button color="primary" (click)="addProfile()">
+      <ion-icon name="add"></ion-icon>
+    </ion-fab-button>
+  </ion-fab>
+</ion-content>
+
+<!-- ============================================= -->
+<!-- ARCHIVO 2: src/app/tab1/tab1.page.ts -->
+<!-- Reemplaza el contenido de tab1.page.ts con esto: -->
+
+import { Component, OnInit } from '@angular/core';
+import { AlertController, ToastController } from '@ionic/angular';
+
+interface UserProfile {
+  id: number;
+  name: string;
+  email: string;
+  role: string;
+  status: 'active' | 'inactive';
+  avatar: string;
+  phone?: string;
+  department?: string;
+}
+
+@Component({
+  selector: 'app-tab1',
+  templateUrl: 'tab1.page.html',
+  styleUrls: ['tab1.page.scss']
+})
+export class Tab1Page implements OnInit {
+  profiles: UserProfile[] = [];
+  filteredProfiles: UserProfile[] = [];
+  searchTerm: string = '';
+
+  constructor(
+    private alertController: AlertController,
+    private toastController: ToastController
+  ) {}
+
+  ngOnInit() {
+    this.loadProfiles();
+  }
+
+  loadProfiles() {
+    // Datos de ejemplo - En producción vendrían de una API
+    this.profiles = [
+      {
+        id: 1,
+        name: 'Ana García',
+        email: 'ana.garcia@empresa.com',
+        role: 'Desarrolladora Senior',
+        status: 'active',
+        avatar: 'https://ionicframework.com/docs/img/demos/avatar.svg',
+        phone: '+34 600 123 456',
+        department: 'Tecnología'
+      },
+      {
+        id: 2,
+        name: 'Carlos Rodríguez',
+        email: 'carlos.rodriguez@empresa.com',
+        role: 'Project Manager',
+        status: 'active',
+        avatar: 'https://ionicframework.com/docs/img/demos/avatar.svg',
+        phone: '+34 600 234 567',
+        department: 'Gestión'
+      },
+      {
+        id: 3,
+        name: 'María López',
+        email: 'maria.lopez@empresa.com',
+        role: 'Diseñadora UX/UI',
+        status: 'inactive',
+        avatar: 'https://ionicframework.com/docs/img/demos/avatar.svg',
+        phone: '+34 600 345 678',
+        department: 'Diseño'
+      },
+      {
+        id: 4,
+        name: 'Juan Martínez',
+        email: 'juan.martinez@empresa.com',
+        role: 'DevOps Engineer',
+        status: 'active',
+        avatar: 'https://ionicframework.com/docs/img/demos/avatar.svg',
+        phone: '+34 600 456 789',
+        department: 'Infraestructura'
+      },
+      {
+        id: 5,
+        name: 'Laura Sánchez',
+        email: 'laura.sanchez@empresa.com',
+        role: 'QA Tester',
+        status: 'active',
+        avatar: 'https://ionicframework.com/docs/img/demos/avatar.svg',
+        phone: '+34 600 567 890',
+        department: 'Calidad'
+      }
+    ];
+    this.filteredProfiles = [...this.profiles];
+  }
+
+  filterProfiles() {
+    if (this.searchTerm.trim() === '') {
+      this.filteredProfiles = [...this.profiles];
+    } else {
+      const term = this.searchTerm.toLowerCase();
+      this.filteredProfiles = this.profiles.filter(profile =>
+        profile.name.toLowerCase().includes(term) ||
+        profile.email.toLowerCase().includes(term) ||
+        profile.role.toLowerCase().includes(term)
+      );
+    }
+  }
+
+  async viewProfile(profile: UserProfile) {
+    const alert = await this.alertController.create({
+      header: profile.name,
+      subHeader: profile.role,
+      message: `
+        <ion-list>
+          <ion-item>
+            <ion-label>
+              <p>Email: ${profile.email}</p>
+              <p>Teléfono: ${profile.phone || 'No disponible'}</p>
+              <p>Departamento: ${profile.department || 'No asignado'}</p>
+              <p>Estado: ${profile.status === 'active' ? 'Activo' : 'Inactivo'}</p>
+            </ion-label>
+          </ion-item>
+        </ion-list>
+      `,
+      buttons: ['Cerrar']
+    });
+    await alert.present();
+  }
+
+  async addProfile() {
+    const alert = await this.alertController.create({
+      header: 'Nuevo Perfil',
+      inputs: [
+        {
+          name: 'name',
+          type: 'text',
+          placeholder: 'Nombre completo'
+        },
+        {
+          name: 'email',
+          type: 'email',
+          placeholder: 'Correo electrónico'
+        },
+        {
+          name: 'role',
+          type: 'text',
+          placeholder: 'Cargo'
+        }
+      ],
+      buttons: [
+        {
+          text: 'Cancelar',
+          role: 'cancel'
+        },
+        {
+          text: 'Guardar',
+          handler: async (data) => {
+            if (data.name && data.email && data.role) {
+              const newProfile: UserProfile = {
+                id: this.profiles.length + 1,
+                name: data.name,
+                email: data.email,
+                role: data.role,
+                status: 'active',
+                avatar: 'https://ionicframework.com/docs/img/demos/avatar.svg'
+              };
+              this.profiles.push(newProfile);
+              this.filterProfiles();
+              await this.showToast('Perfil agregado correctamente');
+            }
+          }
+        }
+      ]
+    });
+    await alert.present();
+  }
+
+  async editProfile(profile: UserProfile) {
+    const alert = await this.alertController.create({
+      header: 'Editar Perfil',
+      inputs: [
+        {
+          name: 'name',
+          type: 'text',
+          value: profile.name,
+          placeholder: 'Nombre completo'
+        },
+        {
+          name: 'email',
+          type: 'email',
+          value: profile.email,
+          placeholder: 'Correo electrónico'
+        },
+        {
+          name: 'role',
+          type: 'text',
+          value: profile.role,
+          placeholder: 'Cargo'
+        }
+      ],
+      buttons: [
+        {
+          text: 'Cancelar',
+          role: 'cancel'
+        },
+        {
+          text: 'Actualizar',
+          handler: async (data) => {
+            if (data.name && data.email && data.role) {
+              const index = this.profiles.findIndex(p => p.id === profile.id);
+              if (index !== -1) {
+                this.profiles[index] = { ...profile, ...data };
+                this.filterProfiles();
+                await this.showToast('Perfil actualizado correctamente');
+              }
+            }
+          }
+        }
+      ]
+    });
+    await alert.present();
+  }
+
+  async deleteProfile(profile: UserProfile) {
+    const alert = await this.alertController.create({
+      header: 'Confirmar eliminación',
+      message: `¿Estás seguro de eliminar el perfil de ${profile.name}?`,
+      buttons: [
+        {
+          text: 'Cancelar',
+          role: 'cancel'
+        },
+        {
+          text: 'Eliminar',
+          role: 'destructive',
+          handler: async () => {
+            const index = this.profiles.findIndex(p => p.id === profile.id);
+            if (index !== -1) {
+              this.profiles.splice(index, 1);
+              this.filterProfiles();
+              await this.showToast('Perfil eliminado');
+            }
+          }
+        }
+      ]
+    });
+    await alert.present();
+  }
+
+  async handleRefresh(event: any) {
+    setTimeout(() => {
+      this.loadProfiles();
+      event.target.complete();
+    }, 1500);
+  }
+
+  async showToast(message: string) {
+    const toast = await this.toastController.create({
+      message: message,
+      duration: 2000,
+      position: 'bottom',
+      color: 'success'
+    });
+    await toast.present();
+  }
+}
+
+<!-- ============================================= -->
+<!-- ARCHIVO 3: src/app/tab2/tab2.page.html -->
+<!-- Reemplaza el contenido de tab2.page.html con esto: -->
+
+<ion-header [translucent]="true">
+  <ion-toolbar color="primary">
+    <ion-title>
+      <ion-icon name="stats-chart-outline"></ion-icon>
+      Estadísticas
+    </ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content [fullscreen]="true">
+  <ion-card>
+    <ion-card-header>
+      <ion-card-title>Resumen de Perfiles</ion-card-title>
+      <ion-card-subtitle>Vista general del sistema</ion-card-subtitle>
+    </ion-card-header>
+    <ion-card-content>
+      <ion-grid>
+        <ion-row>
+          <ion-col size="6">
+            <div class="stat-box">
+              <ion-icon name="people" color="primary" size="large"></ion-icon>
+              <h2>{{ totalProfiles }}</h2>
+              <p>Total Perfiles</p>
+            </div>
+          </ion-col>
+          <ion-col size="6">
+            <div class="stat-box">
+              <ion-icon name="checkmark-circle" color="success" size="large"></ion-icon>
+              <h2>{{ activeProfiles }}</h2>
+              <p>Activos</p>
+            </div>
+          </ion-col>
+        </ion-row>
+        <ion-row>
+          <ion-col size="6">
+            <div class="stat-box">
+              <ion-icon name="pause-circle" color="medium" size="large"></ion-icon>
+              <h2>{{ inactiveProfiles }}</h2>
+              <p>Inactivos</p>
+            </div>
+          </ion-col>
+          <ion-col size="6">
+            <div class="stat-box">
+              <ion-icon name="briefcase" color="tertiary" size="large"></ion-icon>
+              <h2>{{ departments }}</h2>
+              <p>Departamentos</p>
+            </div>
+          </ion-col>
+        </ion-row>
+      </ion-grid>
+    </ion-card-content>
+  </ion-card>
+
+  <ion-card>
+    <ion-card-header>
+      <ion-card-title>Perfiles por Departamento</ion-card-title>
+    </ion-card-header>
+    <ion-card-content>
+      <ion-list>
+        <ion-item *ngFor="let dept of departmentStats">
+          <ion-label>{{ dept.name }}</ion-label>
+          <ion-badge slot="end">{{ dept.count }}</ion-badge>
+        </ion-item>
+      </ion-list>
+    </ion-card-content>
+  </ion-card>
+
+  <ion-card>
+    <ion-card-header>
+      <ion-card-title>Actividad Reciente</ion-card-title>
+    </ion-card-header>
+    <ion-card-content>
+      <ion-list>
+        <ion-item *ngFor="let activity of recentActivities">
+          <ion-icon [name]="activity.icon" slot="start" [color]="activity.color"></ion-icon>
+          <ion-label>
+            <h3>{{ activity.title }}</h3>
+            <p>{{ activity.description }}</p>
+            <p><small>{{ activity.time }}</small></p>
+          </ion-label>
+        </ion-item>
+      </ion-list>
+    </ion-card-content>
+  </ion-card>
+</ion-content>
+
+<!-- ============================================= -->
+<!-- ARCHIVO 4: src/app/tab2/tab2.page.ts -->
+<!-- Reemplaza el contenido de tab2.page.ts con esto: -->
+
+import { Component, OnInit } from '@angular/core';
+
+@Component({
+  selector: 'app-tab2',
+  templateUrl: 'tab2.page.html',
+  styleUrls: ['tab2.page.scss']
+})
+export class Tab2Page implements OnInit {
+  totalProfiles = 5;
+  activeProfiles = 4;
+  inactiveProfiles = 1;
+  departments = 5;
+
+  departmentStats = [
+    { name: 'Tecnología', count: 1 },
+    { name: 'Gestión', count: 1 },
+    { name: 'Diseño', count: 1 },
+    { name: 'Infraestructura', count: 1 },
+    { name: 'Calidad', count: 1 }
+  ];
+
+  recentActivities = [
+    {
+      icon: 'person-add',
+      color: 'success',
+      title: 'Nuevo perfil agregado',
+      description: 'Laura Sánchez se unió al equipo',
+      time: 'Hace 2 horas'
+    },
+    {
+      icon: 'create',
+      color: 'primary',
+      title: 'Perfil actualizado',
+      description: 'Carlos Rodríguez actualizó su información',
+      time: 'Hace 5 horas'
+    },
+    {
+      icon: 'log-in',
+      color: 'tertiary',
+      title: 'Inicio de sesión',
+      description: 'Ana García accedió al sistema',
+      time: 'Hace 1 día'
+    }
+  ];
+
+  constructor() {}
+
+  ngOnInit() {
+    // Aquí podrías cargar datos reales desde un servicio
+  }
+}
+
+<!-- ============================================= -->
+<!-- ARCHIVO 5: src/app/tab3/tab3.page.html -->
+<!-- Reemplaza el contenido de tab3.page.html con esto: -->
+
+<ion-header [translucent]="true">
+  <ion-toolbar color="primary">
+    <ion-title>
+      <ion-icon name="settings-outline"></ion-icon>
+      Configuración
+    </ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content [fullscreen]="true">
+  <ion-card>
+    <ion-card-header>
+      <ion-card-title>Preferencias de Usuario</ion-card-title>
+    </ion-card-header>
+    <ion-card-content>
+      <ion-list>
+        <ion-item>
+          <ion-label>Notificaciones Push</ion-label>
+          <ion-toggle [(ngModel)]="settings.notifications"></ion-toggle>
+        </ion-item>
+        <ion-item>
+          <ion-label>Modo Oscuro</ion-label>
+          <ion-toggle [(ngModel)]="settings.darkMode" (ionChange)="toggleDarkMode()"></ion-toggle>
+        </ion-item>
+        <ion-item>
+          <ion-label>Sincronización Automática</ion-label>
+          <ion-toggle [(ngModel)]="settings.autoSync"></ion-toggle>
+        </ion-item>
+      </ion-list>
+    </ion-card-content>
+  </ion-card>
+
+  <ion-card>
+    <ion-card-header>
+      <ion-card-title>Información de la App</ion-card-title>
+    </ion-card-header>
+    <ion-card-content>
+      <ion-list>
+        <ion-item>
+          <ion-label>
+            <h3>Versión</h3>
+            <p>1.0.0</p>
+          </ion-label>
+        </ion-item>
+        <ion-item>
+          <ion-label>
+            <h3>Desarrollador</h3>
+            <p>Tu Nombre</p>
+          </ion-label>
+        </ion-item>
+        <ion-item>
+          <ion-label>
+            <h3>Framework</h3>
+            <p>Ionic 7 + Angular</p>
+          </ion-label>
+        </ion-item>
+      </ion-list>
+    </ion-card-content>
+  </ion-card>
+
+  <ion-card>
+    <ion-card-header>
+      <ion-card-title>Acciones</ion-card-title>
+    </ion-card-header>
+    <ion-card-content>
+      <ion-button expand="block" color="primary" (click)="exportData()">
+        <ion-icon name="download-outline" slot="start"></ion-icon>
+        Exportar Datos
+      </ion-button>
+      <ion-button expand="block" color="warning" (click)="clearCache()">
+        <ion-icon name="trash-outline" slot="start"></ion-icon>
+        Limpiar Caché
+      </ion-button>
+      <ion-button expand="block" color="danger" (click)="logout()">
+        <ion-icon name="log-out-outline" slot="start"></ion-icon>
+        Cerrar Sesión
+      </ion-button>
+    </ion-card-content>
+  </ion-card>
+</ion-content>
+
+<!-- ============================================= -->
+<!-- ARCHIVO 6: src/app/tab3/tab3.page.ts -->
+<!-- Reemplaza el contenido de tab3.page.ts con esto: -->
+
+import { Component } from '@angular/core';
+import { AlertController, ToastController } from '@ionic/angular';
+
+@Component({
+  selector: 'app-tab3',
+  templateUrl: 'tab3.page.html',
+  styleUrls: ['tab3.page.scss']
+})
+export class Tab3Page {
+  settings = {
+    notifications: true,
+    darkMode: false,
+    autoSync: true
+  };
+
+  constructor(
+    private alertController: AlertController,
+    private toastController: ToastController
+  ) {}
+
+  toggleDarkMode() {
+    document.body.classList.toggle('dark', this.settings.darkMode);
+  }
+
+  async exportData() {
+    const alert = await this.alertController.create({
+      header: 'Exportar Datos',
+      message: 'Se exportarán todos los perfiles en formato JSON',
+      buttons: [
+        {
+          text: 'Cancelar',
+          role: 'cancel'
+        },
+        {
+          text: 'Exportar',
+          handler: async () => {
+            // Simulación de exportación
+            await this.showToast('Datos exportados correctamente');
+          }
+        }
+      ]
+    });
+    await alert.present();
+  }
+
+  async clearCache() {
+    const alert = await this.alertController.create({
+      header: 'Limpiar Caché',
+      message: '¿Estás seguro de que deseas limpiar el caché de la aplicación?',
+      buttons: [
+        {
+          text: 'Cancelar',
+          role: 'cancel'
+        },
+        {
+          text: 'Limpiar',
+          handler: async () => {
+            await this.showToast('Caché limpiado correctamente');
+          }
+        }
+      ]
+    });
+    await alert.present();
+  }
+
+  async logout() {
+    const alert = await this.alertController.create({
+      header: 'Cerrar Sesión',
+      message: '¿Estás seguro de que deseas cerrar sesión?',
+      buttons: [
+        {
+          text: 'Cancelar',
+          role: 'cancel'
+        },
+        {
+          text: 'Salir',
+          handler: async () => {
+            await this.showToast('Sesión cerrada');
+            // Aquí iría la lógica de logout real
+          }
+        }
+      ]
+    });
+    await alert.present();
+  }
+
+  async showToast(message: string) {
+    const toast = await this.toastController.create({
+      message: message,
+      duration: 2000,
+      position: 'bottom'
+    });
+    await toast.present();
+  }
+}
+
+<!-- ============================================= -->
+<!-- ARCHIVO 7: src/app/tab2/tab2.page.scss -->
+<!-- Agrega estos estilos: -->
+
+.stat-box {
+  text-align: center;
+  padding: 20px;
+  background: var(--ion-color-light);
+  border-radius: 10px;
+  
+  h2 {
+    font-size: 2em;
+    font-weight: bold;
+    margin: 10px 0 5px 0;
+  }
+  
+  p {
+    margin: 0;
+    color: var(--ion-color-medium);
+    font-size: 0.9em;
+  }
+}
+
+<!-- ============================================= -->
+<!-- ARCHIVO 8: src/app/tabs/tabs.page.html -->
+<!-- Actualiza las etiquetas de los tabs: -->
+
+<ion-tabs>
+  <ion-tab-bar slot="bottom">
+    <ion-tab-button tab="tab1">
+      <ion-icon name="people-outline"></ion-icon>
+      <ion-label>Perfiles</ion-label>
+    </ion-tab-button>
+
+    <ion-tab-button tab="tab2">
+      <ion-icon name="stats-chart-outline"></ion-icon>
+      <ion-label>Estadísticas</ion-label>
+    </ion-tab-button>
+
+    <ion-tab-button tab="tab3">
+      <ion-icon name="settings-outline"></ion-icon>
+      <ion-label>Configuración</ion-label>
+    </ion-tab-button>
+  </ion-tab-bar>
+</ion-tabs>
