@@ -1,0 +1,8 @@
+ion-searchbar {
+  padding: 0 10px;
+}
+
+ion-item[color="primary"] {
+  --background: var(--ion-color-primary);
+  --color: var(--ion-color-primary-contrast);
+}

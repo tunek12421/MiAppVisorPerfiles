@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { AlertController, ToastController, ModalController } from '@ionic/angular';
 import { ProfileModalComponent } from '../profile-modal/profile-modal.component';
+import { ProfileFormModalComponent } from '../components/profile-form-modal/profile-form-modal.component';
 import { ProfileService, UserProfile } from '../services/profile';
 
 @Component({
@@ -58,129 +59,44 @@ export class Tab1Page implements OnInit {
   }
 
   async addProfile() {
-    const departments = this.profileService.getAvailableDepartments();
-    const roles = this.profileService.getAvailableRoles();
-    
-    const alert = await this.alertController.create({
-      header: 'Nuevo Perfil',
-      inputs: [
-        {
-          name: 'name',
-          type: 'text',
-          placeholder: 'Nombre completo'
-        },
-        {
-          name: 'email',
-          type: 'email',
-          placeholder: 'Correo electrónico'
-        },
-        {
-          name: 'role',
-          type: 'text',
-          placeholder: 'Cargo (ej: Project Manager, QA Tester...)'
-        },
-        {
-          name: 'department',
-          type: 'text',
-          placeholder: 'Departamento (Tecnología, Gestión, Diseño, Infraestructura, Calidad)'
-        }
-      ],
-      message: 'Completa la información del nuevo perfil:',
-      buttons: [
-        {
-          text: 'Cancelar',
-          role: 'cancel'
-        },
-        {
-          text: 'Guardar',
-          handler: async (data) => {
-            if (data.name && data.email && data.role && data.department) {
-              // Normalize department name to match existing ones
-              let normalizedDepartment = data.department.trim();
-              const departments = this.profileService.getAvailableDepartments();
-              
-              // Try to match with existing departments (case insensitive, accent insensitive)
-              const foundDept = departments.find(dept => 
-                dept.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "") === 
-                normalizedDepartment.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "")
-              );
-              
-              normalizedDepartment = foundDept || normalizedDepartment;
-              
-              const newProfile: UserProfile = {
-                id: Date.now(),
-                name: data.name,
-                email: data.email,
-                role: data.role,
-                department: normalizedDepartment,
-                status: 'active',
-                avatar: 'https://ionicframework.com/docs/img/demos/avatar.svg'
-              };
-              this.profileService.addProfile(newProfile);
-              await this.showToast('Perfil agregado correctamente');
-            } else {
-              await this.showToast('Por favor completa todos los campos');
-            }
-          }
-        }
-      ]
+    const modal = await this.modalController.create({
+      component: ProfileFormModalComponent,
+      cssClass: 'profile-form-modal'
     });
-    await alert.present();
+
+    await modal.present();
+    const { data, role } = await modal.onWillDismiss();
+    
+    if (role === 'save' && data) {
+      const newProfile: UserProfile = {
+        id: Date.now(),
+        ...data
+      };
+      this.profileService.addProfile(newProfile);
+      await this.showToast('Perfil agregado correctamente', 'success');
+    }
   }
 
   async editProfile(profile: UserProfile) {
-    const alert = await this.alertController.create({
-      header: 'Editar Perfil',
-      inputs: [
-        {
-          name: 'name',
-          type: 'text',
-          value: profile.name,
-          placeholder: 'Nombre completo'
-        },
-        {
-          name: 'email',
-          type: 'email',
-          value: profile.email,
-          placeholder: 'Correo electrónico'
-        },
-        {
-          name: 'role',
-          type: 'text',
-          value: profile.role,
-          placeholder: 'Cargo'
-        },
-        {
-          name: 'department',
-          type: 'text',
-          value: profile.department || '',
-          placeholder: 'Departamento'
-        }
-      ],
-      buttons: [
-        {
-          text: 'Cancelar',
-          role: 'cancel'
-        },
-        {
-          text: 'Actualizar',
-          handler: async (data) => {
-            if (data.name && data.email && data.role) {
-              const updatedProfile = { 
-                ...profile, 
-                name: data.name, 
-                email: data.email, 
-                role: data.role,
-                department: data.department || profile.department
-              };
-              this.profileService.updateProfile(updatedProfile);
-              await this.showToast('Perfil actualizado correctamente');
-            }
-          }
-        }
-      ]
+    const modal = await this.modalController.create({
+      component: ProfileFormModalComponent,
+      componentProps: {
+        profile: profile
+      },
+      cssClass: 'profile-form-modal'
     });
-    await alert.present();
+
+    await modal.present();
+    const { data, role } = await modal.onWillDismiss();
+    
+    if (role === 'save' && data) {
+      const updatedProfile: UserProfile = {
+        ...profile,
+        ...data
+      };
+      this.profileService.updateProfile(updatedProfile);
+      await this.showToast('Perfil actualizado correctamente', 'success');
+    }
   }
 
   async deleteProfile(profile: UserProfile) {
@@ -212,12 +128,13 @@ export class Tab1Page implements OnInit {
     }, 1500);
   }
 
-  async showToast(message: string) {
+  async showToast(message: string, color: string = 'success') {
     const toast = await this.toastController.create({
       message: message,
       duration: 2000,
       position: 'bottom',
-      color: 'success'
+      color: color,
+      cssClass: 'custom-toast'
     });
     await toast.present();
   }

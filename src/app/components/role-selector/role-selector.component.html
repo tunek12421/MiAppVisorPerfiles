@@ -1,0 +1,56 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-title>Seleccionar Cargo</ion-title>
+    <ion-buttons slot="end">
+      <ion-button (click)="dismiss()">
+        <ion-icon name="close"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+  <ion-toolbar>
+    <ion-searchbar 
+      [(ngModel)]="searchTerm"
+      (ionInput)="filterRoles()"
+      placeholder="Buscar cargo..."
+      animated="true">
+    </ion-searchbar>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+  <ion-list>
+    <ion-item 
+      *ngFor="let role of filteredRoles" 
+      button 
+      (click)="selectRole(role)"
+      [color]="selectedRole === role ? 'primary' : ''">
+      <ion-icon 
+        name="briefcase-outline" 
+        slot="start"
+        [color]="selectedRole === role ? 'light' : 'primary'">
+      </ion-icon>
+      <ion-label>{{ role }}</ion-label>
+      <ion-icon 
+        *ngIf="selectedRole === role" 
+        name="checkmark" 
+        slot="end"
+        color="light">
+      </ion-icon>
+    </ion-item>
+  </ion-list>
+
+  <!-- Opción para agregar nuevo cargo -->
+  <ion-item-divider *ngIf="searchTerm && !roleExists()">
+    <ion-label>Agregar nuevo cargo</ion-label>
+  </ion-item-divider>
+  <ion-item 
+    *ngIf="searchTerm && !roleExists()" 
+    button 
+    (click)="addNewRole()">
+    <ion-icon name="add-circle-outline" slot="start" color="success"></ion-icon>
+    <ion-label color="success">
+      <h2>Crear "{{ searchTerm }}"</h2>
+      <p>Agregar como nuevo cargo</p>
+    </ion-label>
+  </ion-item>
+</ion-content>

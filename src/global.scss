@@ -35,3 +35,47 @@
 /* @import "@ionic/angular/css/palettes/dark.always.css"; */
 @import "@ionic/angular/css/palettes/dark.class.css";
 /* @import "@ionic/angular/css/palettes/dark.system.css"; */
+
+// Estilos para los modales personalizados
+.profile-form-modal {
+  --width: 90%;
+  --max-width: 500px;
+  --height: 90%;
+  --border-radius: 20px;
+  
+  .modal-wrapper {
+    border-radius: 20px;
+  }
+}
+
+.role-selector-modal {
+  --width: 85%;
+  --max-width: 400px;
+  --height: 70%;
+  --border-radius: 15px;
+  
+  .modal-wrapper {
+    border-radius: 15px;
+  }
+}
+
+.custom-toast {
+  --border-radius: 10px;
+  --box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+}
+
+// Animaciones suaves
+ion-chip {
+  animation: fadeIn 0.3s ease-in;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}

@@ -1,0 +1,47 @@
+.avatar-section {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-bottom: 20px;
+  padding: 20px;
+  background: var(--ion-color-light);
+  border-radius: 10px;
+}
+
+.large-avatar {
+  width: 100px;
+  height: 100px;
+  margin-bottom: 10px;
+}
+
+.department-chips {
+  padding: 10px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.department-chips ion-chip {
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.department-chips ion-chip:hover {
+  transform: scale(1.05);
+}
+
+.placeholder-text {
+  color: var(--ion-color-medium);
+  font-style: italic;
+}
+
+.action-buttons {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+  padding: 20px 10px;
+}
+
+ion-item {
+  margin-bottom: 10px;
+}

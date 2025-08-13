@@ -1,0 +1,136 @@
+<ion-header>
+  <ion-toolbar color="primary">
+    <ion-title>{{ profile ? 'Editar Perfil' : 'Nuevo Perfil' }}</ion-title>
+    <ion-buttons slot="end">
+      <ion-button (click)="dismiss()">
+        <ion-icon name="close"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="ion-padding">
+  <!-- Avatar Preview -->
+  <div class="avatar-section">
+    <ion-avatar class="large-avatar">
+      <img [src]="formData.avatar || 'https://ionicframework.com/docs/img/demos/avatar.svg'" />
+    </ion-avatar>
+    <ion-button fill="clear" size="small" (click)="selectAvatar()">
+      <ion-icon name="camera" slot="start"></ion-icon>
+      Cambiar foto
+    </ion-button>
+  </div>
+
+  <ion-list>
+    <!-- Nombre -->
+    <ion-item>
+      <ion-label position="stacked">
+        <ion-text color="primary">
+          <h2>Nombre completo *</h2>
+        </ion-text>
+      </ion-label>
+      <ion-input 
+        [(ngModel)]="formData.name" 
+        placeholder="Ej: Juan Pérez"
+        [clearInput]="true">
+      </ion-input>
+    </ion-item>
+
+    <!-- Email -->
+    <ion-item>
+      <ion-label position="stacked">
+        <ion-text color="primary">
+          <h2>Correo electrónico *</h2>
+        </ion-text>
+      </ion-label>
+      <ion-input 
+        [(ngModel)]="formData.email" 
+        type="email"
+        placeholder="correo@empresa.com"
+        [clearInput]="true">
+      </ion-input>
+    </ion-item>
+
+    <!-- Teléfono -->
+    <ion-item>
+      <ion-label position="stacked">
+        <ion-text color="primary">
+          <h2>Teléfono</h2>
+        </ion-text>
+      </ion-label>
+      <ion-input 
+        [(ngModel)]="formData.phone" 
+        type="tel"
+        placeholder="+34 600 123 456"
+        [clearInput]="true">
+      </ion-input>
+    </ion-item>
+
+    <!-- CARGO - Selector Interactivo con Búsqueda -->
+    <ion-item button (click)="openRoleSelector()">
+      <ion-label>
+        <ion-text color="primary">
+          <h2>Cargo *</h2>
+        </ion-text>
+        <p *ngIf="!formData.role" class="placeholder-text">Selecciona un cargo</p>
+        <h3 *ngIf="formData.role">{{ formData.role }}</h3>
+      </ion-label>
+      <ion-icon name="briefcase-outline" slot="start" color="medium"></ion-icon>
+      <ion-icon name="chevron-forward" slot="end" color="medium"></ion-icon>
+    </ion-item>
+
+    <!-- DEPARTAMENTO - Selector Visual con Chips -->
+    <ion-item>
+      <ion-label position="stacked">
+        <ion-text color="primary">
+          <h2>Departamento *</h2>
+        </ion-text>
+      </ion-label>
+    </ion-item>
+    
+    <div class="department-chips">
+      <ion-chip 
+        *ngFor="let dept of availableDepartments"
+        [color]="formData.department === dept ? 'primary' : 'medium'"
+        [outline]="formData.department !== dept"
+        (click)="selectDepartment(dept)">
+        <ion-icon [name]="getDepartmentIcon(dept)"></ion-icon>
+        <ion-label>{{ dept }}</ion-label>
+        <ion-icon *ngIf="formData.department === dept" name="checkmark-circle"></ion-icon>
+      </ion-chip>
+    </div>
+
+    <!-- Estado -->
+    <ion-item>
+      <ion-label>
+        <ion-text color="primary">
+          <h2>Estado del perfil</h2>
+        </ion-text>
+      </ion-label>
+      <ion-toggle 
+        [(ngModel)]="isActive" 
+        color="success">
+      </ion-toggle>
+      <ion-note slot="end">{{ isActive ? 'Activo' : 'Inactivo' }}</ion-note>
+    </ion-item>
+  </ion-list>
+
+  <!-- Botones de acción -->
+  <div class="action-buttons">
+    <ion-button 
+      expand="block" 
+      color="medium" 
+      fill="outline"
+      (click)="dismiss()">
+      Cancelar
+    </ion-button>
+    <ion-button 
+      expand="block" 
+      color="primary"
+      [disabled]="!isFormValid()"
+      (click)="save()">
+      <ion-icon name="save" slot="start"></ion-icon>
+      {{ profile ? 'Actualizar' : 'Guardar' }}
+    </ion-button>
+  </div>
+</ion-content>
