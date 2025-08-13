@@ -48,7 +48,7 @@ export class ProfileService {
         role: 'Desarrolladora Senior',
         status: 'active',
         avatar: 'https://ionicframework.com/docs/img/demos/avatar.svg',
-        phone: '+34 600 123 456',
+        phone: '+591 69123456',
         department: 'Tecnología'
       },
       {
@@ -58,7 +58,7 @@ export class ProfileService {
         role: 'Project Manager',
         status: 'active',
         avatar: 'https://ionicframework.com/docs/img/demos/avatar.svg',
-        phone: '+34 600 234 567',
+        phone: '+591 70234567',
         department: 'Gestión'
       },
       {
@@ -68,7 +68,7 @@ export class ProfileService {
         role: 'Diseñadora UX/UI',
         status: 'inactive',
         avatar: 'https://ionicframework.com/docs/img/demos/avatar.svg',
-        phone: '+34 600 345 678',
+        phone: '+591 61345678',
         department: 'Diseño'
       },
       {
@@ -78,7 +78,7 @@ export class ProfileService {
         role: 'DevOps Engineer',
         status: 'active',
         avatar: 'https://ionicframework.com/docs/img/demos/avatar.svg',
-        phone: '+34 600 456 789',
+        phone: '72456789',
         department: 'Infraestructura'
       },
       {
@@ -88,7 +88,7 @@ export class ProfileService {
         role: 'QA Tester',
         status: 'active',
         avatar: 'https://ionicframework.com/docs/img/demos/avatar.svg',
-        phone: '+34 600 567 890',
+        phone: '69567890',
         department: 'Calidad'
       }
     ];

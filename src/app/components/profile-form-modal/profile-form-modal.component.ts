@@ -108,9 +108,29 @@ export class ProfileFormModalComponent implements OnInit {
 
   validatePhone(phone: string): boolean {
     if (!phone) return true; // Phone is optional
-    // Spanish phone patterns: +34 XXX XXX XXX, 6XX XXX XXX, 9XX XXX XXX
-    const re = /^(\+34\s?)?[6-9]\d{2}\s?\d{3}\s?\d{3}$/;
-    return re.test(phone.replace(/\s/g, ''));
+    // Bolivian phone patterns: 
+    // Mobile: +591 6XXXXXXX, +591 7XXXXXXX (8 digits after country code)
+    // Landline: +591 2XXXXXXX, +591 3XXXXXXX, +591 4XXXXXXX (7 digits after area code)
+    // Without country code: 6XXXXXXX, 7XXXXXXX, 2XXXXXXX, 3XXXXXXX, 4XXXXXXX
+    const phoneClean = phone.replace(/[\s\-]/g, '');
+    
+    // With +591 country code
+    if (phoneClean.startsWith('+591')) {
+      const number = phoneClean.substring(4);
+      // Mobile: 6 or 7 followed by 7 digits
+      if (/^[67]\d{7}$/.test(number)) return true;
+      // Landline: 2, 3, or 4 followed by 6 digits  
+      if (/^[234]\d{6}$/.test(number)) return true;
+      return false;
+    }
+    
+    // Without country code
+    // Mobile: 6 or 7 followed by 7 digits (8 digits total)
+    if (/^[67]\d{7}$/.test(phoneClean)) return true;
+    // Landline: 2, 3, or 4 followed by 6 digits (7 digits total)
+    if (/^[234]\d{6}$/.test(phoneClean)) return true;
+    
+    return false;
   }
 
   validateName(name: string): boolean {
@@ -148,7 +168,7 @@ export class ProfileFormModalComponent implements OnInit {
 
   get phoneError(): string {
     if (!this.formData.phone) return '';
-    if (!this.validatePhone(this.formData.phone)) return 'Formato: +34 600 123 456';
+    if (!this.validatePhone(this.formData.phone)) return 'Formato: +591 7XXXXXXX o 69123456';
     return '';
   }
 
